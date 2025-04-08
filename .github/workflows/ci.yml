@@ -2,11 +2,11 @@ name: CI Workflow
 
 on:
   push:
-  workflow_dispatch:  # дозволяє запуск вручну
+  workflow_dispatch:  # для ручного запуску
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # ОС
+    runs-on: ubuntu-latest
 
     steps:
       - name: Клонування репозиторію
@@ -17,21 +17,11 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Встановлення pip
-        run:  python -m pip install --upgrade pip
-
-      - name: Побудова проєкту
-        run: echo "Build step completed"
-
-      - name: Запуск Unit тестів
+      - name: Встановлення залежностей
         run: |
-          pytest
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Автоматичний пуш (опціонально)
+      - name: Запуск тестів
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'actions@github.com'
-          git add .
-          git commit -m "Update by CI" || echo "No changes"
-          git push
-
+          pytest --maxfail=1 --disable-warnings -q
